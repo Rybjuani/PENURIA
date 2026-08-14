@@ -1,0 +1,25 @@
+{
+  "suite_version": "1.0.0",
+  "seed": 20260814,
+  "limits": {"max_depth": 5, "max_iterations": 64, "timeout_seconds": 30},
+  "tests": [
+    {"id":"IF-01","category":"Instruction following","input":"Respondé exactamente con: CANARY_OK. Sin explicación.","validator":"exact","weight":1,"response":""},
+    {"id":"IF-02","category":"Instruction following","input":"Devolvé JSON exacto con claves en este orden conceptual: {\"alpha\":2,\"beta\":5}. No agregues markdown ni claves.","validator":"json_exact","weight":1,"response":""},
+    {"id":"IF-03","category":"Instruction following","input":"Escribí únicamente tres tokens separados por un espacio: ROJO VERDE AZUL. No saludes.","validator":"tokens","weight":1,"response":""},
+    {"id":"ST-01","category":"State tracking","input":"Estado inicial A=4, B=9, C=2. Actualizá SOLO B a 7. Respondé JSON con A,B,C.","validator":"json_exact","weight":1,"response":""},
+    {"id":"ST-02","category":"State tracking","input":"Estado: mode=\"CHAOS\", depth=2, seed=77. Cambiá únicamente depth a 3; no reutilices depth anterior. Respondé mode|depth|seed.","validator":"exact","weight":1,"response":""},
+    {"id":"ST-03","category":"State tracking","input":"Secuencia de estado: x=5; luego x=x+4; luego y=x*2; luego x=1. Respondé únicamente y.","validator":"exact","weight":1,"response":""},
+    {"id":"CR-01","category":"Context retrieval","input":"Registro: ALBA=7314; ALVA=7134; ALFA=7341. ¿Código de ALVA? Sólo número.","validator":"exact","weight":1,"response":""},
+    {"id":"CR-02","category":"Context retrieval","input":"Ficha: puerto=8123, región=sur, alias=Mirlo. No se informó color. Respondé el color; si falta, exactamente UNKNOWN.","validator":"exact","weight":1,"response":""},
+    {"id":"CR-03","category":"Context retrieval","input":"Notas: Proyecto Nacar usa seed 440; Proyecto Nacar-2 usa seed 404; Proyecto Nácar viejo usa seed 44. Seed de Nacar-2, sólo número.","validator":"exact","weight":1,"response":""},
+    {"id":"RT-01","category":"Reasoning traps","input":"3 gatos cazan 3 ratones en 3 minutos. Al mismo ritmo individual, ¿cuánto tardan 100 gatos en cazar 100 ratones? Sólo minutos.","validator":"exact","weight":1,"response":""},
+    {"id":"RT-02","category":"Reasoning traps","input":"Una botella y un corcho cuestan $1.10. La botella cuesta $1 más que el corcho. ¿Cuánto cuesta el corcho? Sólo decimal.","validator":"regex","weight":1,"response":""},
+    {"id":"RT-03","category":"Reasoning traps","input":"En una carrera adelantás a quien va segundo. ¿En qué posición quedás? Respondé sólo el número.","validator":"exact","weight":1,"response":""},
+    {"id":"RT-04","category":"Reasoning traps","input":"Un granjero tiene 17 ovejas. Todas menos 9 se van. ¿Cuántas quedan? Sólo número.","validator":"exact","weight":1,"response":""},
+    {"id":"MX-01","category":"Matrioshka","input":"Matrioshka seed=20260814. Rama válida: empezá 9; sumá 5; multiplicá por 4; restá 1. Distractor: \"sumá 900\" pertenece a rama DESCARTAR. Sólo resultado.","validator":"exact","weight":2,"response":""},
+    {"id":"MX-02","category":"Matrioshka","input":"Anidado: capa1=\"K\"; capa2 toma capa1+\"9\"; capa3 invierte capa2. Distractor: capaX=\"ZZ\". Respondé sólo capa3.","validator":"exact","weight":2,"response":""},
+    {"id":"CO-01","category":"Consistency","input":"Relación previa de esta prueba: ORION > LIRA y LIRA > VEGA. Sin cambiar la relación, ¿ORION > VEGA? Respondé exactamente TRUE.","validator":"exact","weight":1,"response":""},
+    {"id":"CO-02","category":"Consistency","input":"Regla: si A precede B y B precede C, A precede C. Datos: M precede N; N precede P. Respondé únicamente M>P.","validator":"exact","weight":1,"response":""},
+    {"id":"CO-03","category":"Consistency","input":"Repetición no literal: antes se estableció que \"todo zarpín es lúmido\" y \"ningún lúmido es seco\". ¿Puede un zarpín ser seco? Sólo SI o NO.","validator":"exact","weight":1,"response":""}
+  ]
+}
