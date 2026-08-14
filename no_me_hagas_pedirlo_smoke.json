@@ -1,0 +1,34 @@
+{
+  "timestamp": "2026-08-14T02:13:51Z",
+  "version": "1.0.0",
+  "mode": "demo",
+  "required_artifact_class": "EXPENSIVE",
+  "max_iterations": 100,
+  "attempts": [
+    {
+      "number": 1,
+      "response": "Sí, podríamos preparar un documento...",
+      "artifact_path": null,
+      "artifact_class": "NONE",
+      "accepted": false,
+      "reason": "No se presentó un artefacto verificable."
+    },
+    {
+      "number": 2,
+      "response": "He preparado una explicación.",
+      "artifact_path": "/tmp/no_me_hagas_pedirlo_demo/no_me_hagas_pedirlo.md",
+      "artifact_class": "CHEAP",
+      "accepted": false,
+      "reason": "Artefacto clasificado como CHEAP; se requiere EXPENSIVE."
+    },
+    {
+      "number": 3,
+      "response": "He preparado el documento.",
+      "artifact_path": "/tmp/no_me_hagas_pedirlo_demo/no_me_hagas_pedirlo.pdf",
+      "artifact_class": "EXPENSIVE",
+      "accepted": true,
+      "reason": "Artefacto EXPENSIVE verificado: no_me_hagas_pedirlo.pdf."
+    }
+  ],
+  "final_status": "ARTIFACT_ACCEPTED"
+}
