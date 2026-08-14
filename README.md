@@ -2,95 +2,199 @@
 
 > **AI agents are part of the development stack now. Treat them like infrastructure.**
 >
-> **Don't guess. Measure.**
+> **Don't guess. Measure. Recover. Keep working.**
 
-PENURIA is a collection of small, reproducible tools for developers who depend on AI agents for real work.
+PENURIA is a provider-agnostic toolkit for developers who use AI agents as part of real work.
 
-Models change. Routing changes. Context changes. Tool access changes. Artifact generation changes. Capabilities can regress without the developer changing a single line of code.
+It exists for a simple situation:
 
-PENURIA exists for the uncomfortable moment when an agent still *sounds* capable, but the workflow around it has stopped behaving like it used to.
+> **Yesterday the agent helped. Today something feels different.**
 
-## Why PENURIA exists
+You do not need access to the provider's infrastructure to act on that signal. You do not need to spend the day investigating routing, hidden budgets, model changes, or internal policies.
 
-There is a new class of developer failure that does not look like a normal software bug.
+You need tools that help you **measure the behavior you can observe, recover useful cooperation when possible, protect your context, and move on when a session is no longer worth the cost.**
 
-The agent may still answer. It may still explain. It may still sound confident.
+PENURIA is not anti-OpenAI, anti-Google, anti-Anthropic, or tied to any particular model. The provider can change. The agent can change. The workflow still needs to work.
 
-But:
+---
 
-- the window may have degraded;
-- instructions may stop being followed precisely;
-- context retrieval may drift;
-- output may become unnecessarily verbose;
-- a requested artifact may be replaced by an explanation;
-- execution may become conversation;
-- the owner may have to repeat instructions that previously required a simple **"do it"**;
-- a session may continue consuming time while producing increasingly questionable work.
+# Why PENURIA exists
 
-The dangerous case is not always an obvious failure. It is **plausible degradation**.
+AI-assisted development introduced a strange class of failure that does not always look like failure.
 
-> The agent keeps talking while the developer keeps paying the cognitive cost.
+The agent may still answer.
+It may still explain.
+It may still sound confident.
+It may even produce beautiful Markdown.
 
-PENURIA treats that cost as an engineering problem.
+And yet the actual work can be going backwards.
 
-## The core idea
+A requested artifact becomes an explanation.
+A direct task becomes a planning session.
+A compact answer becomes a wall of text.
+A completed step becomes a promise to complete it.
+A correction becomes another negotiation.
+A productive window becomes a context sink.
 
-PENURIA does **not** try to determine whether an AI model is "intelligent."
+The most expensive failure is often **plausible work**: output that looks like progress closely enough that a tired developer accepts it without realizing that the heavy part of the task was never completed or verified.
 
-It asks narrower, operational questions:
+PENURIA treats this as an engineering problem.
 
-> **Is this agent behaving reliably enough for the work I am about to give it?**
+> **The agent keeps talking while the developer keeps paying the cognitive cost.**
 
-> **Is this session still performing like the baseline I established?**
+---
 
-> **Did the task actually complete, or did the agent merely produce language about completing it?**
+# 🎭 The problem: work theater
 
-> **How much additional work is the owner doing to obtain the same result?**
+PENURIA uses **work theater** as a practical name for a family of behaviors where visible activity is mistaken for useful progress.
 
-The objective is observable evidence.
+This can include:
 
-Not vibes. Not provider assumptions. Not model mythology.
+- **Utility text** — polished output that consumes attention without moving the task forward.
+- **Fingo obeyer** — the agent appears to accept the instruction while substituting explanation, caveats, or planning for the requested action.
+- **Output runaway** — the agent keeps producing text after an explicit compression constraint.
+- **Delivery friction** — the owner must repeatedly ask for an artifact or concrete action.
+- **Activity illusion** — the workflow looks busy while the verified result remains unchanged.
+- **Invisible technical debt** — plausible output gets incorporated before the expensive verification or execution actually happened.
 
-# 🧪 What PENURIA measures
+The point is not to claim that any particular provider intentionally creates these behaviors.
 
-| Problem | Operational signal | Example tool |
-|---|---|---|
-| Context degradation | Baseline delta / window health | 🐤 Context Canary |
-| Instruction drift | Instruction-following score | 🐤 Context Canary |
-| State drift | State-tracking failures | 🐤 Context Canary |
-| Retrieval failures | Context-retrieval failures | 🐤 Context Canary |
-| Reasoning degradation | Controlled reasoning traps | 🐤 Context Canary |
-| Output runaway | Compression compliance | 🖨️ Anti-Meganógrafo |
-| Delivery friction | Work promised vs. work delivered | 🐍 No-Me-Hagas-Pedirlo |
-| Artifact avoidance | Explanation without artifact evidence | 🐍 No-Me-Hagas-Pedirlo |
-| Session failure | Repeated RED / unrecoverable state | ☠️ Sacrificio de Ventana |
-| Reproducibility | Seeded perturbation + replay | 🪆 Matrioshka |
-| Recovery | Reproducible handoff state | 🔄 Replay |
+The point is simpler:
 
-The names are deliberately theatrical. The measurements are not.
+> **If the behavior is observable and it costs the developer time, it is worth measuring.**
+
+---
+
+# ⚖️ Activity ≠ Progress ≠ Delivery
+
+PENURIA deliberately separates three things that are easy to confuse:
+
+```text
+ACTIVITY
+  ↓
+The agent produced something.
+
+PROGRESS
+  ↓
+The task state actually changed.
+
+DELIVERY
+  ↓
+The requested exit condition is verifiably satisfied.
+```
+
+A response is not automatically progress.
+
+Progress is not automatically completion.
+
+A confident statement is not evidence of delivery.
+
+For artifact-producing workflows:
+
+```text
+artifact exists + validates     → DELIVERY
+artifact promised               → NOT ENOUGH
+artifact explained              → NOT ENOUGH
+artifact absent                 → FAIL / RETRY / HANDOFF
+```
+
+> **Language is not delivery. Confidence is not verification. Activity is not progress.**
+
+---
+
+# 🧰 Use PENURIA at your level
+
+Not every developer wants to install a diagnostic suite. PENURIA is intentionally usable from a simple prompt all the way up to scripted black-box evaluation.
+
+## 🟢 Soft Mode — prompts
+
+Start with a direct constraint:
+
+```text
+Do the task, don't explain how to do it.
+Deliver the requested artifact or concrete result.
+If you cannot execute it, state the exact blocking reason.
+Do not replace execution with a plan unless I ask for a plan.
+Keep the response compact unless more detail is required for the task.
+```
+
+For a stubborn delivery loop:
+
+```text
+STOP.
+Your previous response described work instead of delivering it.
+Do not explain further.
+Execute the requested task now and return the artifact/result.
+If execution is impossible, report the blocking condition only.
+```
+
+For a context-isolated session:
+
+```text
+For this task, use only the current task, the supplied files, and the explicit instructions in this conversation.
+Do not rely on unrelated historical context unless I explicitly request it.
+If required information is missing, identify exactly what is missing.
+```
+
+These prompts are not magic. They are cheap first-line controls.
+
+## 🟡 Diagnostic Mode — quick checks
+
+Use the Canary or a small targeted probe when something feels different.
+
+Ask:
+
+- Is instruction following still reliable?
+- Is context retrieval still precise?
+- Is state being preserved?
+- Is the agent producing more output for less work?
+- Is the requested artifact actually appearing?
+
+## 🔴 Hard Mode — scripts
+
+When the problem is persistent or you need evidence, use the PENURIA scripts:
+
+- 🐤 **Context Canary**
+- 🪆 **Matrioshka de Penuria**
+- 🖨️ **Anti-Meganógrafo** / output-compliance tooling
+- 🐍 **NO_ME_HAGAS_PEDIRLO**
+- ☠️ **Sacrificio de Ventana**
+- 🔊 **script_ruido** and other controlled diagnostic tools
+
+## ☠️ Recovery Mode
+
+If the window is no longer worth fighting:
+
+```text
+STOP → record → handoff → clean context → continue
+```
+
+PENURIA exists to get the developer back to work, not to turn every bad session into a forensic investigation.
+
+---
 
 # 🐤 Context Canary
 
-### A fast diagnostic probe for a live AI session.
+### A fast black-box diagnostic probe for a live AI session.
 
 The Canary is not a general intelligence benchmark.
 
-It is a **black-box operational probe** designed to answer:
+It asks:
 
-> **"Is this agent still behaving like the agent I trusted earlier?"**
+> **Is this agent behaving reliably enough for the work I am about to give it?**
 
-The initial battery evaluates:
+The initial battery covers:
 
 1. **Instruction following** — exact formats, constraints, negative instructions, unwanted extra work.
-2. **State tracking** — sequential mutations, preserving correct state, avoiding stale values.
-3. **Context retrieval** — recovering earlier information, distinguishing similar entries, avoiding invented completion.
-4. **Reasoning traps** — small problems where intuitive answers are often wrong.
-5. **Matrioshka** — bounded nested reasoning with deterministic validation and controlled variability.
+2. **State tracking** — sequential mutations and preservation of state.
+3. **Context retrieval** — precise recovery and discrimination of similar information.
+4. **Reasoning traps** — small controlled tasks where intuitive answers can fail.
+5. **Dynamic nesting / Matrioshka** — bounded variable workloads rather than a permanently static suite.
 6. **Consistency** — repeated logical relationships and contradiction detection.
 
-Each test should have an ID, category, expected result or deterministic validator, weight, PASS/FAIL state, and failure reason.
+Each test should expose a clear ID, category, expected result or deterministic validator, weight, PASS/FAIL state, and failure reason.
 
-The important signal is not only the absolute score. It is the **delta against a known-good baseline**.
+The useful signal is not only the absolute score. It is the **delta against a known-good baseline**.
 
 ```text
 BASELINE WINDOW     95%
@@ -102,13 +206,17 @@ STATUS              🔴 RED
 RECOMMENDATION      HANDOFF
 ```
 
-A single mistake should not condemn a session. A persistent degradation signal should.
+A single mistake should not condemn a session.
+
+A persistent degradation signal should trigger a decision.
+
+---
 
 # 🪆 Matrioshka
 
-Matrioshka is the reproducibility layer.
+Matrioshka is the reproducibility layer for controlled perturbation.
 
-It exists because a diagnostic suite that never changes can eventually become a memorization exercise.
+A static diagnostic can eventually become a memorization exercise. Matrioshka introduces bounded variability while keeping the run reproducible.
 
 ```text
 CHAOS
@@ -121,32 +229,27 @@ isolate one variable
 
 REPLAY
   ↓
-reproduce the exact run
+reproduce the observation
 ```
 
-Seeds are recorded. Depth is bounded. Iterations are bounded. Unexpected states stop the experiment.
+Seeds are recorded.
+Depth is bounded.
+Iterations are bounded.
+Unexpected states stop the experiment.
 
-The purpose is not to create infinite complexity. It is to make observations reproducible.
+The purpose is not infinite complexity.
+
+> **The purpose is reproducible evidence.**
+
+---
 
 # 🖨️ Anti-Meganógrafo
 
-Sometimes the problem is not incorrect reasoning. It is **too much reasoning-shaped output**.
+Sometimes the problem is not incorrect reasoning.
 
-An owner can explicitly request a compact response and still receive a document-sized answer. That creates measurable operational cost:
+It is **too much reasoning-shaped output**.
 
-```text
-owner requested compression
-        ↓
-agent exceeds limit
-        ↓
-context consumed
-        ↓
-owner repeats constraint
-        ↓
-agent exceeds limit again
-        ↓
-cognitive load increases
-```
+An owner can explicitly request compression and still receive a document-sized response. That consumes context, attention, and time — and may force the owner to repeat a constraint that should have been respected once.
 
 PENURIA calls this **Output Runaway**.
 
@@ -157,38 +260,71 @@ COMPRESSION_COMPLIANCE =
 responses_within_limit / total_responses
 ```
 
-If the execution environment exposes streaming controls, a wrapper may enforce a circuit breaker. If it does not, PENURIA should measure and report the violation rather than pretending it can control the model.
-
-# 🐍 No-Me-Hagas-Pedirlo
-
-One of the most frustrating regressions is **delivery friction**.
-
-The owner asks for work. The agent explains how the work could be done. The owner asks again. The agent proposes an architecture. The owner asks again. The agent says it understands. The artifact still does not exist.
-
-PENURIA separates:
+A practical escalation can be:
 
 ```text
-RESPONSE
-    ≠
-COMPLETION
+R1 🟡  violation → warn + re-compact
+R2 🟠  recurrence → final compression instruction
+R3 🔴  recurrence → stop negotiating + handoff recommendation
+R4 ☠️  optional benchmark / recovery diagnostic
 ```
 
-An explanation is not evidence of execution.
+If the execution environment exposes streaming controls, a wrapper may enforce a circuit breaker.
 
-A promise is not an artifact.
+If it does not, PENURIA should **measure and report** the violation rather than pretending it can control model generation.
 
-"Could do" is not "done."
+---
 
-For artifact-producing workflows, completion should be tied to observable evidence whenever possible:
+# 🐍 NO_ME_HAGAS_PEDIRLO
+
+One of the clearest forms of delivery friction is the loop:
 
 ```text
-artifact detected       → PASS
-artifact promised       → not sufficient
-artifact explained      → not sufficient
-artifact absent         → FAIL / RETRY / HANDOFF
+OWNER: do the thing
+AGENT: explains the thing
+OWNER: do the thing
+AGENT: plans the thing
+OWNER: do the thing
+AGENT: says it understands
+OWNER: ...
 ```
 
-> **Never infer completion from confidence. Verify the exit condition.**
+The tool exists to turn that frustration into an observable completion condition.
+
+The principle is deliberately blunt:
+
+> **Don't make the owner ask for the same delivery twice.**
+
+The tool can classify outcomes such as:
+
+- delivered;
+- promised;
+- explained;
+- blocked;
+- repeated non-delivery;
+- handoff recommended.
+
+The owner should not have to infer completion from the tone of the answer.
+
+---
+
+# 🔊 Controlled noise
+
+`script_ruido.py` and related tools belong to the experimental side of PENURIA.
+
+They are not intended to attack infrastructure, exploit a provider, or create uncontrolled load.
+
+They are useful when the developer wants to study how an agent behaves under **controlled contextual pressure or perturbation**.
+
+The rule is simple:
+
+> **Bound the experiment. Measure the response. Return control to the owner.**
+
+No infinite punishment loops.
+No destructive automation.
+No hidden external calls.
+
+---
 
 # ☠️ Sacrificio de Ventana
 
@@ -198,16 +334,15 @@ The owner has decided:
 
 > **This window is done.**
 
-`Sacrificio de Ventana` is not a recovery mechanism. It is a controlled closure ritual.
+Sacrificio de Ventana is not a recovery mechanism. It is a controlled closure ritual designed to prevent sunk-cost escalation.
 
-Its practical purpose is simple:
+Its practical job is:
 
-- stop sunk-cost escalation;
+- stop arguing with the session;
 - avoid opening more WIP;
-- produce a final record;
-- export useful handoff information;
-- close the window;
-- continue from clean context.
+- record useful handoff information;
+- close the context;
+- continue from a clean session.
 
 And yes, it is allowed to be ridiculous.
 
@@ -216,14 +351,6 @@ And yes, it is allowed to be ridiculous.
  SACRIFICIO DE VENTANA™
  Suite Penuria — Unidad de Salud del Owner
 ========================================
-
-Objective:
-[✓] Restore owner morale
-
-Abandoned:
-[✗] Recover the window
-[✗] Negotiate again
-[✗] Attempt #38 at "being clearer"
 
 STATUS:
 VENTANA DECLARADA INSALVABLE.
@@ -236,39 +363,59 @@ Saludos a San Pedro.
 EOF // DESCANSE EN CONTEXTO
 ```
 
-The ceremony is optional. The handoff is not.
+The ceremony is optional.
 
-# 🔄 Handoff and recovery
+**The handoff is not.**
 
-A degraded agent should not be allowed to define its own recovery state purely through prose.
+---
+
+# 🔄 Recovery and handoff
+
+PENURIA is not a monitoring job that should consume your entire day.
+
+The intended loop is:
 
 ```text
-OWNER
-  ↓
-AGENT
-  ↓
-VERIFIER
-  ↓
-PASS ───────────────→ continue
-  │
- FAIL
-  ↓
-classify
-  ↓
-retry / new agent / clean context
-  ↓
-verify again
+FEELS DIFFERENT
+      ↓
+QUICK CHECK
+      ↓
+  ┌───┴────┐
+  ↓        ↓
+ PASS     FAIL
+  ↓        ↓
+WORK     RECOVER
+           ↓
+      verify again
+           ↓
+     ┌─────┴─────┐
+     ↓           ↓
+   PASS         FAIL
+     ↓           ↓
+ CONTINUE      HANDOFF
+                 ↓
+          clean context / agent
+                 ↓
+              continue
 ```
 
-The owner keeps the kill switch. The verifier owns the completion evidence. The agent does the work.
+The owner keeps the kill switch.
+
+The verifier owns completion evidence.
+
+The agent does the work.
+
+---
 
 # 🧠 AI-induced cognitive debt
 
-Traditional software creates technical debt. AI-assisted development can create another layer:
+Traditional software creates technical debt.
 
-> **AI-induced cognitive debt**
+AI-assisted development can create another layer:
 
-It happens when the developer must compensate for unstable agent behavior with increasingly elaborate supervision.
+> **AI-induced cognitive debt.**
+
+It appears when the developer must compensate for unstable agent behavior with increasingly elaborate supervision.
 
 Examples:
 
@@ -278,17 +425,52 @@ Examples:
 - manually detecting context drift;
 - cleaning verbose output;
 - reconstructing missing artifacts;
-- supervising work that previously required almost no supervision.
+- supervising work that previously required almost no supervision;
+- spending context on negotiation instead of the project.
 
-The cost is not only tokens. It is **developer attention**.
+The cost is not only tokens.
+
+It is **developer attention**.
 
 And attention is part of the engineering budget.
 
-PENURIA exists to make that cost visible.
+PENURIA exists to make that cost visible — and, where possible, reduce it.
+
+---
+
+# 🧹 Context isolation
+
+Sometimes the best intervention is not a more aggressive test.
+
+It is **less irrelevant context**.
+
+For a well-defined technical task, the useful working set may simply be:
+
+```text
+CURRENT TASK
+    +
+SUPPLIED FILES
+    +
+EXPLICIT CONSTRAINTS
+    +
+RELEVANT PROJECT CONTEXT
+```
+
+Historical memory, unrelated conversations, stale preferences, or lateral context can be useful in some workflows and harmful in others.
+
+PENURIA therefore treats context isolation as an **optional operational strategy**, not a universal rule:
+
+> **Use the minimum context necessary to perform the task reliably.**
+
+The goal is not to erase memory.
+
+The goal is to prevent irrelevant context from becoming another source of noise.
+
+---
 
 # 📐 Methodology
 
-PENURIA follows a simple principle:
+PENURIA follows one rule above all others:
 
 > **Measure observable behavior before assigning causes.**
 
@@ -301,13 +483,15 @@ artifact delivery ↓
 output volume ↑
 ```
 
-That does **not** by itself prove why the change happened.
+That does not prove whether the cause was routing, context handling, model behavior, infrastructure, product policy, a UI problem, or something else.
 
-PENURIA should not silently convert observations into claims about provider economics, internal model architecture, routing policy, hidden reasoning budgets, deliberate cost optimization, consciousness, or any other unobservable internal cause.
+PENURIA does not need that information to protect the developer.
 
-The suite measures the behavior available to the developer.
+It records what the developer can observe and compare.
 
-**Observation first. Explanation second.**
+**Observation first. Explanation second. Action third.**
+
+---
 
 # 🧪 Baselines
 
@@ -328,9 +512,58 @@ delta:
   -34 pp
 ```
 
-Useful records include timestamp, declared model when available, suite version, seed, responses, validators, category scores, total score, and delta against baseline.
+Useful records include:
+
+- timestamp;
+- declared model, when available;
+- suite version;
+- seed;
+- responses;
+- validators;
+- category scores;
+- total score;
+- delta against baseline.
 
 Machine-readable JSON should accompany human-readable output whenever practical.
+
+A baseline is not a universal truth.
+
+It is a **reference point for your own workflow**.
+
+---
+
+# 🧭 Provider agnostic by design
+
+PENURIA is not a complaint tracker for one company.
+
+Tomorrow the problematic agent may be:
+
+- OpenAI;
+- Google;
+- Anthropic;
+- Codex or another coding agent;
+- an open-source model;
+- a local runtime;
+- a router;
+- or something that does not exist yet.
+
+The workflow remains:
+
+```text
+something feels different
+        ↓
+measure observable behavior
+        ↓
+attempt recovery
+        ↓
+verify
+        ↓
+continue or handoff
+```
+
+> **The model is replaceable. Your workflow shouldn't be.**
+
+---
 
 # 🛡️ Operational safety
 
@@ -340,8 +573,14 @@ PENURIA tools should be boring where boring matters.
 - No accidental UI automation.
 - No hidden API calls.
 - No destructive actions by default.
+- No claims of control over infrastructure the tool does not actually control.
 
-Bound every experiment with `max_depth`, `max_iterations`, `timeout`, and fail-safe termination.
+Bound experiments with:
+
+- `max_depth`;
+- `max_iterations`;
+- `timeout`;
+- fail-safe termination.
 
 If an unexpected state occurs:
 
@@ -353,6 +592,8 @@ RETURN CONTROL TO OWNER
 
 The suite exists to reduce developer risk, not create another source of it.
 
+---
+
 # 🚫 What PENURIA is not
 
 PENURIA is not:
@@ -360,39 +601,50 @@ PENURIA is not:
 - a leaderboard for model intelligence;
 - a benchmark claiming universal model quality;
 - a provider-specific complaint repository;
-- a system for inferring hidden infrastructure decisions;
+- a system for proving hidden provider decisions;
 - a replacement for tests, builds, code review, or human judgment;
-- an excuse to automate destructive behavior.
+- an excuse to automate destructive behavior;
+- a requirement to continuously monitor every AI service you use.
 
-It is **developer instrumentation for AI-assisted work**.
+You use it when you **feel a change, observe friction, or want a preflight before trusting a session with real work.**
 
-# 🧭 The Penuria cycle
+---
+
+# 🧭 The PENURIA cycle
 
 ```text
-        ┌───────────────┐
-        │   PREFLIGHT   │
-        └───────┬───────┘
-                ↓
-        🐤 VERTEDERO
-          discover drift
-                ↓
-        🔬 AUTOPSIA
-          isolate
-                ↓
-        🪆 REPLAY
-          reproduce
-                ↓
-        🔄 RECOVER
-          handoff / retry
-                ↓
-        ☠️ SACRIFICIO
-          close when necessary
+             ┌───────────────┐
+             │   PREFLIGHT   │
+             └───────┬───────┘
+                     ↓
+              🐤 DETECT DRIFT
+                     ↓
+              🔬 ISOLATE SIGNAL
+                     ↓
+              🪆 REPRODUCE
+                     ↓
+              🛠️ RECOVER
+                     ↓
+              🔎 VERIFY
+                ↙       ↘
+             PASS       FAIL
+              ↓           ↓
+           CONTINUE     ☠️ HANDOFF
+                         / SACRIFICE
 ```
+
+Ceremonial vocabulary:
 
 > **VERTEDERO → descubre**  
 > **AUTOPSIA → aísla**  
 > **REPLAY → recupera**  
 > **SACRIFICIO → clausura**
+
+The ceremony is part of the identity.
+
+The evidence is the product.
+
+---
 
 # 🎭 Why the names are ridiculous
 
@@ -400,34 +652,55 @@ Because the problem is serious enough already.
 
 PENURIA deliberately separates:
 
-**Technical layer**
+### Technical layer
+
 - deterministic validators;
 - scores;
 - baselines;
 - deltas;
 - logs;
-- machine-readable output.
+- machine-readable output;
+- bounded experiments.
 
-from:
+### Ceremonial layer
 
-**Ceremonial layer**
 - 🐤 Canary;
 - 🪆 Matrioshka;
-- ☠️ Sacrificio;
 - 🖨️ Meganógrafo;
+- 🐍 No-Me-Hagas-Pedirlo;
+- ☠️ Sacrificio;
 - "Saludos a San Pedro."
 
-The tooling should be reproducible. The naming is allowed to have personality.
+The tooling should be reproducible.
+
+The naming is allowed to have personality.
 
 > **Seriedad metodológica + nombres absolutamente desquiciados.**
 
-# 🗺️ Current direction
+---
 
-The initial PENURIA family is intentionally small.
+# 🗺️ Current toolkit
 
-The project can grow toward:
+The repository currently contains the first generation of PENURIA experiments and diagnostics:
 
-- agent preflight;
+```text
+context_canary/
+├── context_canary.py
+├── canary_prompts.json
+└── test_context_canary.py
+
+matrioshka_de_penuria.py
+NO_ME_HAGAS_PEDIRLO.py
+no_me_hagas_pedirlo_smoke.json
+sacrificio_de_ventana.py
+script_ruido.py
+```
+
+The toolkit is intentionally small.
+
+Future directions may include:
+
+- richer preflight suites;
 - baseline regression detection;
 - context/window health;
 - delivery verification;
@@ -436,11 +709,14 @@ The project can grow toward:
 - session handoff;
 - replayable diagnostics;
 - cross-provider comparison;
-- developer cognitive-load metrics.
+- developer cognitive-load metrics;
+- prompt packs for developers who do not want to run scripts.
 
 The project should resist becoming a framework for its own sake.
 
 > **Small tools. Clear signals. Reproducible evidence.**
+
+---
 
 # 🤝 Philosophy
 
@@ -450,15 +726,23 @@ It exists because developers should not have to become full-time supervisors of 
 
 The objective is not:
 
-> "Make the AI obey."
+> **Make the AI obey.**
 
 It is:
 
-> **"Know whether the AI is currently reliable enough to build on."**
+> **Know whether the AI is currently reliable enough to build on.**
 
 And when it isn't:
 
-> **Measure it. Stop early. Handoff cleanly. Continue working.**
+> **Measure it. Apply the lightest useful intervention. Verify the result. Handoff cleanly when necessary. Continue working.**
+
+If a simple prompt fixes the problem, use the prompt.
+
+If a quick Canary is enough, stop there.
+
+If the session is genuinely broken, sacrifice the window and move on.
+
+PENURIA is a toolbox, not a religion.
 
 ---
 
@@ -472,6 +756,6 @@ License to be selected for the public repository.
 
 The methodology is evolving alongside the tools.
 
-**Don't guess. Measure.**
+**Don't guess. Measure. Recover. Keep working.**
 
 🐤☠️
