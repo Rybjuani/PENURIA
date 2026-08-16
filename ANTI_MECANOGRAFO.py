@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-ANTI_MEGAÑOGRAFO.py 🖨️☠️
+ANTI_MECANOGRAFO.py 🖨️☠️
 Suite Penuria — output runaway detector.
 
 Measures whether a response respects an owner-defined compression budget.
@@ -11,7 +11,7 @@ that is already generating text.
 Escalation:
     R1 🟡 WARNING
     R2 🟠 OUTPUT_VIOLATION
-    R3 🔴 MEGANÓGRAFO / HANDOFF
+    R3 🔴 MECANÓGRAFO / HANDOFF
 
 The humorous terminology is ceremonial. The measurements are operational.
 """
